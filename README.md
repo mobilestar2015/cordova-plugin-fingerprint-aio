@@ -11,6 +11,20 @@
 
 **This plugin provides a single and simple interface for accessing fingerprint APIs on both Android 6+ and iOS.**
 
+## Enhancement
+* Return error with code and reason
+  Error object would contain following structure
+  ```
+  {
+    "code": 0, // int
+    "message": "localized error message"
+  }
+  ```
+# code
+  0: Biometry scanner not available on the following device.
+  1: Biometry is lockout (Pin code not set, iOS only)
+  2: Biometry not enrolled (Didn't set fingerprint or Face ID yet)
+
 ## Features
 
 * Check if a fingerprint scanner is available

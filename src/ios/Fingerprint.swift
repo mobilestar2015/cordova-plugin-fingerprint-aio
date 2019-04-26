@@ -12,11 +12,31 @@ import LocalAuthentication
 
         let available = authenticationContext.canEvaluatePolicy(policy, error: &error);
 
+        var res: [String: Any] = [:];
         if(error != nil){
             biometryType = "none";
+            
+            if #available(iOS 11.0, *) {
+                switch(error?.code) {
+                case LAError.biometryNotAvailable.rawValue:
+                    res["code"] = 0;
+                    break;
+                case LAError.biometryLockout.rawValue:
+                    res["code"] = 1;
+                    break;
+                case LAError.biometryNotEnrolled.rawValue:
+                    res["code"] = 2;
+                    break;
+                case .none:
+                    break;
+                case .some(_):
+                    break;
+                }
+            }
+            res["message"] = error?.localizedDescription;
         }
 
-        var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Not available");
+        var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: res);
         if available == true {
             if #available(iOS 11.0, *) {
                 switch(authenticationContext.biometryType) {
