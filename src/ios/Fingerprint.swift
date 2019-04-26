@@ -12,10 +12,18 @@ import LocalAuthentication
 
         let available = authenticationContext.canEvaluatePolicy(policy, error: &error);
 
+        if #available(iOS 11.0, *) {
+            switch(authenticationContext.biometryType) {
+            case .none:
+                biometryType = "none";
+            case .touchID:
+                biometryType = "finger";
+            case .faceID:
+                biometryType = "face"
+            }
+        }
         var res: [String: Any] = [:];
         if(error != nil){
-            biometryType = "none";
-            
             if #available(iOS 11.0, *) {
                 switch(error?.code) {
                 case LAError.biometryNotAvailable.rawValue:
@@ -28,27 +36,16 @@ import LocalAuthentication
                     res["code"] = 2;
                     break;
                 case .none:
-                    break;
                 case .some(_):
                     break;
                 }
             }
+            res["biometryType"] = biometryType;
             res["message"] = error?.localizedDescription;
         }
 
         var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: res);
         if available == true {
-            if #available(iOS 11.0, *) {
-                switch(authenticationContext.biometryType) {
-                case .none:
-                    biometryType = "none";
-                case .touchID:
-                    biometryType = "finger";
-                case .faceID:
-                    biometryType = "face"
-                }
-            }
-
             pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: biometryType);
         }
 

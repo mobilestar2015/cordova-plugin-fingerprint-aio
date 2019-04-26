@@ -257,6 +257,7 @@ public class Fingerprint extends CordovaPlugin {
 
               if (mFingerPrintManager.isHardwareDetected() && !mFingerPrintManager.hasEnrolledFingerprints()) {
                   res.put("code", 2);
+                  res.put("biometryType", "finger");
                   res.put("message", "Fingerprint authentication not ready");
               } else {
                   res.put("code", 0);
