@@ -36,6 +36,7 @@ import LocalAuthentication
                     res["code"] = 2;
                     break;
                 case .none:
+                    break;
                 case .some(_):
                     break;
                 }
