@@ -263,6 +263,7 @@ public class Fingerprint extends CordovaPlugin {
                   res.put("code", 0);
                   res.put("message", "Fingerprint authentication not available");
               }
+              mCallbackContext.error(res);
             }
             mCallbackContext.sendPluginResult(mPluginResult);
             return true;
