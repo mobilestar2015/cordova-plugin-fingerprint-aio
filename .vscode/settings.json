@@ -1,4 +1,10 @@
 {
     "editor.quickSuggestions": false,
-    "sde.buildOnSave": true
+    "sde.buildOnSave": true,
+    "files.exclude": {
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true
+    }
 }
