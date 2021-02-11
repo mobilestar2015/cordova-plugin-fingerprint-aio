@@ -1,2 +1,6 @@
 node_modules/
 package-lock.json
+.idea
+src/android/.project
+src/android/.gradle
+src/android/.settings

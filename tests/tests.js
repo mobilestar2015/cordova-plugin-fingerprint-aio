@@ -9,11 +9,11 @@ exports.defineAutoTests = function() {
   });
 
   describe("isAvailable", function () {
-    it("isAvailable schould be defined", function () {
+    it("isAvailable should be defined", function () {
       expect(window.Fingerprint.isAvailable).toBeDefined();
     });
 
-    it("isAvailable schould return an result or error in callback", function (done) {
+    it("isAvailable should return an result or error in callback", function (done) {
       window.Fingerprint.isAvailable( function (result) {
         expect(result).toBeDefined();
         done();
@@ -22,10 +22,20 @@ exports.defineAutoTests = function() {
         done();
       });
     });
+
+    it("isAvailable (allowBackup) should return an result or error in callback", function (done) {
+      window.Fingerprint.isAvailable( function (result) {
+        expect(result).toBeDefined();
+        done();
+      }, function(result) {
+        expect(result).toBeDefined();
+        done();
+      }, {allowBackup: true});
+    });
   });
 
   describe("show", function () {
-    it("show schould be defined", function () {
+    it("show should be defined", function () {
       expect(window.Fingerprint.show).toBeDefined();
     });
   });
@@ -41,41 +51,95 @@ exports.defineManualTests = function (contentEl, createActionButton) {
       alert("Fingerprint available (" + result + ")");
     }
 
-    function isAvailableError(message) {
-      alert(message);
+    function isAvailableError(error) {
+      console.log(error);
+      alert(error.message);
+    }
+  });
+
+  createActionButton("isAvailable (allowBackup)", function () {
+    window.Fingerprint.isAvailable(isAvailableSuccess, isAvailableError, {allowBackup: true});
+
+    function isAvailableSuccess(result) {
+      console.log(result);
+      alert("Fingerprint available (" + result + ")");
+    }
+
+    function isAvailableError(error) {
+      console.log(error);
+      alert(error.message);
     }
   });
 
   createActionButton("show", function () {
     Fingerprint.show({
-      clientId: "Fingerprint-Tests",
-      clientSecret: "password",
       disableBackup: false
     }, successCallback, errorCallback);
 
     function successCallback() {
-      alert("Authentication successfull");
+      alert("Authentication successful");
     }
 
     function errorCallback(err) {
-      alert("Authentication invalid " + err);
+      alert("Authentication invalid " + JSON.stringify(err));
     }
   });
 
   createActionButton("show-disablebackup", function () {
     Fingerprint.show({
-      clientId: "Fingerprint-Tests",
-      clientSecret: "password",
-      disableBackup: true
+      disableBackup: true,
+      cancelButtonTitle: "Abbrechen"
     }, successCallback, errorCallback);
 
     function successCallback() {
-      alert("Authentication successfull");
+      alert("Authentication successful");
     }
 
     function errorCallback(err) {
-      alert("Authentication invalid " + err);
+      alert("Authentication invalid " + JSON.stringify(err));
     }
   });
 
+  createActionButton("Save secret", function () {
+    Fingerprint.registerBiometricSecret({
+      secret: "secret"
+    }, successCallback, errorCallback);
+
+    function successCallback() {
+      alert("Secret saved successfully");
+    }
+
+    function errorCallback(err) {
+      alert("Error while saving secret: " + JSON.stringify(err));
+    }
+  });
+
+  createActionButton("Save secret (invalidate on enrollment)", function () {
+    Fingerprint.registerBiometricSecret({
+      secret: "secret",
+      invalidateOnEnrollment: true
+    }, successCallback, errorCallback);
+
+    function successCallback() {
+      alert("Secret saved successfully");
+    }
+
+    function errorCallback(err) {
+      alert("Error while saving secret: " + JSON.stringify(err));
+    }
+  });
+
+  createActionButton("Load secret", function () {
+    Fingerprint.loadBiometricSecret({
+      disableBackup: true,
+    }, successCallback, errorCallback);
+
+    function successCallback(secret) {
+      alert("Secret loaded successfully: " + secret);
+    }
+
+    function errorCallback(err) {
+      alert("Error while loading secret: " + JSON.stringify(err));
+    }
+  });
 };
