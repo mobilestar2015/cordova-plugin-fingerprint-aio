@@ -35,17 +35,6 @@ enum PluginError:Int {
         var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Not available");
         let available = authenticationContext.canEvaluatePolicy(policy, error: &error);
 
-        if #available(iOS 11.0, *) {
-            switch(authenticationContext.biometryType) {
-            case .none:
-                biometryType = "none";
-            case .touchID:
-                biometryType = "finger";
-            case .faceID:
-                biometryType = "face"
-            }
-        }
-
         var results: [String : Any]
 
         if(error != nil){
@@ -56,30 +45,18 @@ enum PluginError:Int {
 
         if (available == true) {
             if #available(iOS 11.0, *) {
-                switch(error?.code) {
-                case LAError.biometryNotAvailable.rawValue:
-                    res["code"] = 0;
-                    break;
-                case LAError.biometryLockout.rawValue:
-                    res["code"] = 1;
-                    break;
-                case LAError.biometryNotEnrolled.rawValue:
-                    res["code"] = 2;
-                    break;
+                switch(authenticationContext.biometryType) {
                 case .none:
-                    break;
-                case .some(_):
-                    break;
+                    biometryType = "none";
+                case .touchID:
+                    biometryType = "finger";
+                case .faceID:
+                    biometryType = "face"
                 }
             }
-            res["biometryType"] = biometryType;
-            res["message"] = error?.localizedDescription;
-        }
 
-        var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: res);
-        if available == true {
             pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: biometryType);
-        }else{
+        } else{
             var code: Int;
             switch(error!._code) {
                 case Int(kLAErrorBiometryNotAvailable):
@@ -102,7 +79,7 @@ enum PluginError:Int {
 
     func justAuthenticate(_ command: CDVInvokedUrlCommand) {
         let authenticationContext = LAContext();
-        var errorResponse: [AnyHashable: Any] = [
+        let errorResponse: [AnyHashable: Any] = [
             "message": "Something went wrong"
         ];
         var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: errorResponse);
